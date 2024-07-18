@@ -1,0 +1,87 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="row">
+    <div class="col-5 offset-3 mt-2">
+   <h3>Welcome to <%=listing.title%></h3>
+   <p class="offset-4"><i>Come stay with us!</i></p>
+    <form method="post" action="/listings/<%=listing._id%>/book/details" novalidate class="needs-validation">
+        <div class="mb-2">
+            <label for="user" class="form-label">Username</label>
+            <input
+            value="<%=currUser.username%>"
+            id="user" 
+            class="form-control"
+            type="text"
+            required>
+           </div>
+        <div class="mb-2">
+            <label for="checkin" class="form-label">Check in</label>
+            <input
+            name="checkin"
+            id="checkin" 
+            class="form-control"
+            type="date"
+            required>
+           </div>
+           <div class="mb-2">
+            <label for="checkout" class="form-label">Check out</label>
+            <input
+            name="checkout" 
+            id="checkout"
+            class="form-control"
+            type="date"
+            required>
+           </div>
+           <div class="mb-2">
+            <label for="guests" class="form-label">Guests</label>
+            <input
+            id="guests"
+            name="guests"
+            placeholder="Enter guests"
+            class="form-control"
+            type="number"
+            required>
+           </div>
+           <div class="mb-2">
+            <label for="total" class="form-label">Total(in Rupees)</label>
+            <input
+            id="total"
+            name="total"
+            value="" 
+            class="form-control"
+            type="number"
+            readonly>
+           </div>
+           <button class="booking-btn btn btn-success btn-lg offset-4 mt-3">BOOK NOW</button>
+    </form>
+</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const guestsInput = document.getElementById('guests');
+    const totalInput = document.getElementById('total');
+
+    function calculateTotal() {
+        const checkinDate = new Date(checkinInput.value);
+        const checkoutDate = new Date(checkoutInput.value);
+        const guests = parseInt(guestsInput.value, 10);
+
+        if (checkinDate && checkoutDate && guests && checkoutDate > checkinDate) {
+            const days = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
+            const pricePerDayPerGuest =parseInt("<%=listing.price%>", 10);
+            const total = days * guests * pricePerDayPerGuest;
+
+            totalInput.value = total;
+        } else {
+            totalInput.value = '';
+        }
+    }
+
+    checkinInput.addEventListener('change', calculateTotal);
+    checkoutInput.addEventListener('change', calculateTotal);
+    guestsInput.addEventListener('input', calculateTotal);
+});
+</script>

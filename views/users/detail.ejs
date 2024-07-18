@@ -1,0 +1,30 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="col-6 offset-3">
+    <h2>Thank You for Booking with Us!</h2>
+    <hr>
+    <h3>Booking Confirmation</h3>
+    <p>Dear <%= currUser.username%>,</p>
+    <p>Thank you for choosing to stay with us/book your visit to <%= listing.title%>. Your booking details are confirmed as follows:</p>
+    
+    <ul>
+        <li><strong>Booking ID:</strong> <%= currUser._id%></li>
+        <li><strong>Contact Email:</strong> <%=currUser.email%></li>
+        <li><strong>Guests_no:</strong> <%=guests%></li>
+        <li><strong>Total:</strong> &#x20B9; <%=total%></li>
+    </ul>
+    
+    <h3>What’s Next?</h3>
+    <p><strong>Check-in Information:</strong> We look forward to welcoming you on <%=checkin%>. Here are a few things to note:</p>
+    <ul>
+        <li>Check-in time is at 8:00 a.m.</li>
+        <li>Our front desk is open 24/7 for your convenience.</li>
+    </ul>
+    
+    <h3>Share Your Experience</h3>
+    <p>We’d love to hear about your stay/visit! Connect with us on social media and tag us at @Wanderlust to share your memories and experiences with Wanderlust.</p>
+    
+    <p>Thank you once again for choosing Wanderlust. We look forward to making your stay/visit memorable!</p>
+    
+    <p>Best regards,Wanderlust Team!</p>
+</div>
