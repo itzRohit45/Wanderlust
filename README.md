@@ -81,10 +81,6 @@ npm run start-debug # Debug mode with deprecation warnings
 └── app.js            # Main application file
 ```
 
-## Documentation
-- `IMPLEMENTATION_COMPLETE.md` - Complete feature documentation
-- `MOCK_PAYMENT_SETUP.md` - Mock payment system details
-
 ## Future Enhancements
 When ready for production, you can easily integrate real payment gateways like:
 - Stripe (international)
