@@ -1,7 +1,7 @@
 # Wanderlust - Travel Booking Platform
 
 ## Overview
-A complete travel booking platform built with Node.js, Express, MongoDB, and EJS. Features property listings, user authentication, booking system with mock payments, and PDF receipt generation.
+A complete travel booking platform built with Bootstrap,Express.Js, MongoDB, and EJS. Features property listings, user authentication, booking system with mock payments, and PDF receipt generation.
 
 ## Current Payment System
 The application uses a **Mock Payment System** that simulates real payment processing without requiring external payment gateway credentials. This makes it perfect for development, testing, and demonstration purposes.
