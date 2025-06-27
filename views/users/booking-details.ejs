@@ -1,0 +1,122 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-check-circle"></i> Booking Confirmed!</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Booking Details</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Booking ID:</strong></td>
+                                    <td><%=booking.bookingId%></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Booking Date:</strong></td>
+                                    <td><%=booking.createdAt.toLocaleDateString()%></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Check-in:</strong></td>
+                                    <td><%=booking.checkIn.toLocaleDateString()%></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Check-out:</strong></td>
+                                    <td><%=booking.checkOut.toLocaleDateString()%></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Guests:</strong></td>
+                                    <td><%=booking.guests%></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Amount:</strong></td>
+                                    <td><strong>₹<%=booking.totalAmount.toLocaleString("en-IN")%></strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Payment Status:</strong></td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> <%=booking.paymentStatus.toUpperCase()%>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Property Details</h5>
+                            <div class="property-card">
+                                <img src="<%=booking.listing.image.url%>" class="img-fluid rounded mb-2" alt="Property">
+                                <h6><%=booking.listing.title%></h6>
+                                <p class="text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <%=booking.listing.location%>, <%=booking.listing.country%>
+                                </p>
+                                <p class="text-muted">
+                                    <i class="fas fa-rupee-sign"></i> 
+                                    <%=booking.listing.price.toLocaleString("en-IN")%> per night
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Payment Information</h6>
+                            <p class="text-muted small">Payment ID: <%=booking.paymentId%></p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="/bookings/<%=booking._id%>/receipt" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Download Receipt
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Important:</strong> Please save your booking ID for future reference. 
+                        You can also download your receipt anytime from your bookings section.
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="/listings" class="btn btn-outline-secondary">
+                                <i class="fas fa-home"></i> Back to Listings
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="/my-bookings" class="btn btn-success">
+                                <i class="fas fa-list"></i> My Bookings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .property-card img {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .table td {
+        padding: 0.5rem 0;
+    }
+    
+    .badge {
+        font-size: 0.8em;
+    }
+    
+    .alert {
+        border-left: 4px solid #17a2b8;
+    }
+</style>

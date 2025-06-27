@@ -1,0 +1,252 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="search-header mb-4">
+                <h2><i class="fas fa-filter"></i> Advanced Search Results</h2>
+                <p class="text-muted">
+                    Found <strong><%=searchCount%></strong> 
+                    <%= searchCount === 1 ? 'listing' : 'listings' %> 
+                    <% if(searchFilters.destination) { %>
+                        for "<strong><%=searchFilters.destination%></strong>"
+                    <% } %>
+                    <% if(searchFilters.minPrice || searchFilters.maxPrice) { %>
+                        <span class="price-filter">
+                            • Price: 
+                            <% if(searchFilters.minPrice) { %>₹<%=searchFilters.minPrice%><% } else { %>₹0<% } %>
+                            - 
+                            <% if(searchFilters.maxPrice) { %>₹<%=searchFilters.maxPrice%><% } else { %>∞<% } %>
+                        </span>
+                    <% } %>
+                </p>
+                
+                <!-- Active Filters Display -->
+                <div class="active-filters">
+                    <% if(searchFilters.destination || searchFilters.minPrice || searchFilters.maxPrice || searchFilters.sortBy) { %>
+                        <small class="text-muted">Active filters: </small>
+                        <% if(searchFilters.destination) { %>
+                            <span class="badge bg-primary me-1">Destination: <%=searchFilters.destination%></span>
+                        <% } %>
+                        <% if(searchFilters.minPrice) { %>
+                            <span class="badge bg-success me-1">Min: ₹<%=searchFilters.minPrice%></span>
+                        <% } %>
+                        <% if(searchFilters.maxPrice) { %>
+                            <span class="badge bg-success me-1">Max: ₹<%=searchFilters.maxPrice%></span>
+                        <% } %>
+                        <% if(searchFilters.sortBy) { %>
+                            <span class="badge bg-info me-1">
+                                Sort: 
+                                <% switch(searchFilters.sortBy) { 
+                                    case 'price_low': %>Price ↑<% break;
+                                    case 'price_high': %>Price ↓<% break;
+                                    case 'newest': %>Newest<% break;
+                                    case 'oldest': %>Oldest<% break;
+                                    default: %>Default<% break;
+                                } %>
+                            </span>
+                        <% } %>
+                        <a href="/listings" class="btn btn-sm btn-outline-secondary ms-2">
+                            <i class="fas fa-times"></i> Clear All
+                        </a>
+                    <% } %>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+    <% if(listings.length > 0) { %>
+        <div class="row">
+            <% listings.forEach(function(listing) { %>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card listing-card h-100">
+                        <img 
+                            src="<%=listing.image.url%>" 
+                            class="card-img-top listing-img" 
+                            alt="listing_image"
+                            style="height: 20rem;"
+                        >
+                        <div class="card-img-overlay">
+                            <span class="badge bg-dark price-badge">
+                                ₹<%=listing.price.toLocaleString("en-IN")%>/night
+                            </span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title"><%=listing.title%></h6>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%=listing.location%>, <%=listing.country%>
+                            </p>
+                            <p class="card-text flex-grow-1">
+                                <%=listing.description.length > 80 ? listing.description.substring(0, 80) + '...' : listing.description%>
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-star text-warning"></i> 4.5
+                                    </small>
+                                    <a href="/listings/<%=listing._id%>" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="row">
+            <div class="col-12 text-center mt-5">
+                <div class="no-results">
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No listings found</h4>
+                    <p class="text-muted">
+                        Try adjusting your search filters or browse all listings
+                    </p>
+                    <div class="mt-4">
+                        <a href="/listings" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Browse All Listings
+                        </a>
+                        <button class="btn btn-outline-secondary" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left"></i> Modify Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Quick Actions -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="quick-actions">
+                <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <h6><i class="fas fa-tag"></i> Price Ranges</h6>
+                            <div class="d-flex flex-wrap">
+                                <a href="/listings/advanced-search?maxPrice=2000" class="badge bg-light text-dark me-2 mb-2">Under ₹2,000</a>
+                                <a href="/listings/advanced-search?minPrice=2000&maxPrice=5000" class="badge bg-light text-dark me-2 mb-2">₹2,000 - ₹5,000</a>
+                                <a href="/listings/advanced-search?minPrice=5000" class="badge bg-light text-dark me-2 mb-2">Above ₹5,000</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <h6><i class="fas fa-sort"></i> Sort Options</h6>
+                            <div class="d-flex flex-wrap">
+                                <a href="/listings/advanced-search?sortBy=price_low" class="badge bg-light text-dark me-2 mb-2">Price: Low to High</a>
+                                <a href="/listings/advanced-search?sortBy=price_high" class="badge bg-light text-dark me-2 mb-2">Price: High to Low</a>
+                                <a href="/listings/advanced-search?sortBy=newest" class="badge bg-light text-dark me-2 mb-2">Newest</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <h6><i class="fas fa-map"></i> Popular Destinations</h6>
+                            <div class="d-flex flex-wrap">
+                                <a href="/listings/search?destination=Mumbai" class="badge bg-light text-dark me-2 mb-2">Mumbai</a>
+                                <a href="/listings/search?destination=Delhi" class="badge bg-light text-dark me-2 mb-2">Delhi</a>
+                                <a href="/listings/search?destination=Goa" class="badge bg-light text-dark me-2 mb-2">Goa</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .search-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        border-left: 4px solid #007bff;
+    }
+
+    .active-filters {
+        margin-top: 1rem;
+    }
+
+    .listing-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .listing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .listing-img {
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .listing-card:hover .listing-img {
+        transform: scale(1.05);
+    }
+
+    .price-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+    }
+
+    .no-results {
+        padding: 3rem 0;
+    }
+
+    .quick-actions {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-top: 3px solid #28a745;
+    }
+
+    .action-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .badge {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .badge:hover {
+        background-color: #007bff !important;
+        color: white !important;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+        .search-header {
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .col-lg-3 {
+            margin-bottom: 2rem;
+        }
+        
+        .active-filters {
+            text-align: center;
+        }
+    }
+</style>

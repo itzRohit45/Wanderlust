@@ -35,7 +35,12 @@
             <input 
              name="listing[image]" 
              type="file"
-             class="form-control">
+             class="form-control"
+             accept="image/*"
+             required>
+            <div class="invalid-feedback">
+                Please upload an image for your listing
+            </div>
         </div>
 
         <div class="row">
@@ -45,6 +50,8 @@
                 placeholder="1200" 
                 name="listing[price]" 
                 class="form-control"
+                type="number"
+                min="0"
                 required>
                 <div class="invalid-feedback">
                     Please enter a valid price

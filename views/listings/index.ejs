@@ -5,7 +5,7 @@
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        width: 70%;
+        width: 100%;
         overflow: hidden;
     }
  .scrollable-container {
@@ -15,24 +15,24 @@
        padding-bottom: 10px; 
       -webkit-overflow-scrolling: touch; 
       flex: 1;
-      scrollbar-width: thin; /* "auto" for default browser style */
-      scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0); /* thumb and track color */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0);
 }
 .scrollable-container::-webkit-scrollbar {
-    width: 8px; /* width of the scrollbar */
+    width: 8px;
   }
 
   .scrollable-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0); /* color of the track */
+    background: rgba(0, 0, 0, 0);
   }
 
   .scrollable-container::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); /* color of the thumb */
-    border-radius: 4px; /* roundness of the thumb */
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
   }
 
   .scrollable-container::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.5); /* color of the thumb on hover */
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
     .filter{
@@ -40,7 +40,7 @@
       margin-right: 2rem;
       margin-top: 2rem;
       opacity:0.5;
-      flex: 0 0 auto; /* Prevent items from growing and shrinking */
+      flex: 0 0 auto;
       padding: 5px; 
     }
     .filter:hover{
@@ -50,19 +50,48 @@
     .filter p{
       font-size: 0.8rem;
     }
-    .tax-info{
-       display: none;
-    }
-    .tax-toggle{
-        border: 1px solid black;
-        border-radius: 1.4rem;
-        height: 3.25rem;
-        padding: 1rem;
-        margin-left: 3rem;
-        display: flex;
-        align-items: center;
+    
+    .advanced-search-card {
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    .advanced-search-card h5 {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+
+    .advanced-search-card .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .advanced-search-card .form-control,
+    .advanced-search-card .form-select {
+        border-radius: 0.3rem;
+        box-shadow: none;
+        border-color: #007bff;
+    }
+
+    .advanced-search-card .btn-primary {
+        border-radius: 0.3rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .advanced-search-card .btn-outline-primary {
+        border-radius: 0.3rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Hide filters on smaller screens */
+    @media (max-width: 768px) {
+        #filters {
+            display: none;
+        }
+    }
   </style>
   
      <div id="filters" class="container">
@@ -112,12 +141,6 @@
         <p>Boats</p>
       </div>
     </div>
-    <div class="tax-toggle">
-      <div class="form-check-reverse form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-        <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
-      </div>
-    </div>
      </div>
     
     <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
@@ -130,7 +153,6 @@
                       <p class="card-text">
                         <b><%= listing.title%></b><br>
                         &#8377; <%=listing.price.toLocaleString("en-IN")%> / night
-                        <i class="tax-info">&nbsp;+18% GST</i>
                       </p>
                     </div>
                   </div>
@@ -138,16 +160,51 @@
               <% }%>
     </div>
 
-<script>
-    let taxSwitch=document.getElementById("flexSwitchCheckDefault");
-    taxSwitch.addEventListener("click",()=>{
-      let taxInfo=document.getElementsByClassName("tax-info");
-  for(info of taxInfo){
+    <!-- Advanced Search Section -->
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="advanced-search-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5><i class="fas fa-filter"></i> Advanced Search</h5>
+                    <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearchForm">
+                        <i class="fas fa-search-plus"></i> More Filters
+                    </button>
+                </div>
+                
+                <div class="collapse" id="advancedSearchForm">
+                    <form action="/listings/advanced-search" method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="destination" class="form-label">Destination</label>
+                            <input type="text" class="form-control" id="destination" name="destination" placeholder="Enter city, country, or property name">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="minPrice" class="form-label">Min Price (₹)</label>
+                            <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Min">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="maxPrice" class="form-label">Max Price (₹)</label>
+                            <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Max">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="sortBy" class="form-label">Sort By</label>
+                            <select class="form-select" id="sortBy" name="sortBy">
+                                <option value="">Default</option>
+                                <option value="price_low">Price: Low to High</option>
+                                <option value="price_high">Price: High to Low</option>
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    if(info.style.display!="inline")
-          info.style.display="inline";
-      else
-         info.style.display="none";
-  }
-    })
-</script>

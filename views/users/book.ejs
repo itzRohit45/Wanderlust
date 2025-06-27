@@ -4,7 +4,7 @@
     <div class="col-5 offset-3 mt-2">
    <h3>Welcome to <%=listing.title%></h3>
    <p class="offset-4"><i>Come stay with us!</i></p>
-    <form method="post" action="/listings/<%=listing._id%>/book/details" novalidate class="needs-validation">
+    <form id="bookingForm" novalidate class="needs-validation">
         <div class="mb-2">
             <label for="user" class="form-label">Username</label>
             <input
@@ -12,7 +12,7 @@
             id="user" 
             class="form-control"
             type="text"
-            required>
+            readonly>
            </div>
         <div class="mb-2">
             <label for="checkin" class="form-label">Check in</label>
@@ -40,10 +40,11 @@
             placeholder="Enter guests"
             class="form-control"
             type="number"
+            min="1"
             required>
            </div>
            <div class="mb-2">
-            <label for="total" class="form-label">Total(in Rupees)</label>
+            <label for="total" class="form-label">Total Amount (in Rupees)</label>
             <input
             id="total"
             name="total"
@@ -52,9 +53,41 @@
             type="number"
             readonly>
            </div>
-           <button class="booking-btn btn btn-success btn-lg offset-4 mt-3">BOOK NOW</button>
+           <div class="mb-2">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i> 
+                Total = Number of nights × Guests × Price per night (₹<%=listing.price%>)
+            </small>
+           </div>
+           <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Payment Method (Demo)</label>
+            <select id="paymentMethod" name="paymentMethod" class="form-select" required>
+                <option value="">Select Payment Method</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="upi">UPI</option>
+                <option value="netbanking">Net Banking</option>
+                <option value="wallet">Digital Wallet</option>
+            </select>
+           </div>
+           <button type="button" id="payNowBtn" class="booking-btn btn btn-success btn-lg offset-4 mt-3" disabled>
+               <i class="fas fa-credit-card"></i> PAY NOW (DEMO)
+           </button>
     </form>
 </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-success" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2">Processing your payment...</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -63,6 +96,34 @@
     const checkoutInput = document.getElementById('checkout');
     const guestsInput = document.getElementById('guests');
     const totalInput = document.getElementById('total');
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    const payNowBtn = document.getElementById('payNowBtn');
+    const bookingForm = document.getElementById('bookingForm');
+
+    console.log('Booking form initialized. Elements found:', {
+        checkinInput: !!checkinInput,
+        checkoutInput: !!checkoutInput,
+        guestsInput: !!guestsInput,
+        totalInput: !!totalInput,
+        paymentMethodSelect: !!paymentMethodSelect,
+        payNowBtn: !!payNowBtn,
+        bookingForm: !!bookingForm
+    });
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    checkinInput.min = today;
+    
+    checkinInput.addEventListener('change', function() {
+        const checkinDate = new Date(checkinInput.value);
+        const minCheckout = new Date(checkinDate);
+        minCheckout.setDate(minCheckout.getDate() + 1);
+        checkoutInput.min = minCheckout.toISOString().split('T')[0];
+        if (checkoutInput.value && new Date(checkoutInput.value) <= checkinDate) {
+            checkoutInput.value = '';
+        }
+        calculateTotal();
+    });
 
     function calculateTotal() {
         const checkinDate = new Date(checkinInput.value);
@@ -70,18 +131,109 @@
         const guests = parseInt(guestsInput.value, 10);
 
         if (checkinDate && checkoutDate && guests && checkoutDate > checkinDate) {
-            const days = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
-            const pricePerDayPerGuest =parseInt("<%=listing.price%>", 10);
+            const days = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+            const pricePerDayPerGuest = parseInt("<%=listing.price%>", 10);
             const total = days * guests * pricePerDayPerGuest;
 
             totalInput.value = total;
+            checkFormValidity();
         } else {
             totalInput.value = '';
+            payNowBtn.disabled = true;
         }
+    }
+
+    function checkFormValidity() {
+        const isValid = checkinInput.value && 
+                       checkoutInput.value && 
+                       guestsInput.value && 
+                       totalInput.value && 
+                       paymentMethodSelect.value;
+        
+        payNowBtn.disabled = !isValid;
+        console.log('Form validity:', {
+            checkin: checkinInput.value,
+            checkout: checkoutInput.value,
+            guests: guestsInput.value,
+            total: totalInput.value,
+            paymentMethod: paymentMethodSelect.value,
+            isValid: isValid,
+            buttonDisabled: payNowBtn.disabled
+        });
     }
 
     checkinInput.addEventListener('change', calculateTotal);
     checkoutInput.addEventListener('change', calculateTotal);
     guestsInput.addEventListener('input', calculateTotal);
+    paymentMethodSelect.addEventListener('change', checkFormValidity);
+
+    payNowBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('PAY NOW button clicked!');
+
+        if (!bookingForm.checkValidity()) {
+            console.log('Form validation failed');
+            bookingForm.classList.add('was-validated');
+            return;
+        }
+
+        const bookingData = {
+            checkin: checkinInput.value,
+            checkout: checkoutInput.value,
+            guests: guestsInput.value,
+            total: totalInput.value,
+            paymentMethod: paymentMethodSelect.value
+        };
+
+        console.log('Booking data:', bookingData);
+
+        // Show loading modal
+        const loadingModalElement = document.getElementById('loadingModal');
+        if (!loadingModalElement) {
+            console.error('Loading modal element not found!');
+            alert('Modal not found. Please refresh the page.');
+            return;
+        }
+
+        const loadingModal = new bootstrap.Modal(loadingModalElement);
+        loadingModal.show();
+        
+        // Update loading text
+        document.querySelector('#loadingModal .modal-body p').textContent = 'Processing your payment...';
+
+        console.log('Sending payment request to:', `/listings/<%=listing._id%>/book/process-payment`);
+
+        // Process payment (mock)
+        fetch(`/listings/<%=listing._id%>/book/process-payment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Payment response:', data);
+            loadingModal.hide();
+            
+            if (data.success) {
+                alert(data.message + '\\nBooking ID: ' + data.bookingId);
+                window.location.href = data.redirectUrl;
+            } else {
+                alert('Payment failed: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Payment error:', error);
+            loadingModal.hide();
+            alert('Payment processing failed. Please try again. Error: ' + error.message);
+        });
+    });
 });
 </script>

@@ -1,0 +1,523 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-12">
+            <% if (!currUser) { %>
+                <div class="alert alert-warning border-0 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning me-3"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Login Required!</h5>
+                            <p class="mb-0">You need to <a href="/login" class="alert-link fw-bold">login</a> to book this property.</p>
+                        </div>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="booking-form-card card border-0 shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white text-center py-4">
+                        <h2 class="mb-2"><i class="fas fa-calendar-check"></i> Book Your Stay</h2>
+                        <h4 class="fw-normal opacity-90"><%= listing.title %></h4>
+                        <p class="mb-0 opacity-75"><i class="fas fa-map-marker-alt"></i> <%= listing.location %>, <%= listing.country %></p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form id="bookingForm" class="needs-validation" novalidate>
+                            <!-- User and Payment Method Row -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="user" class="form-label fw-semibold">
+                                        <i class="fas fa-user text-primary"></i> Guest Name
+                                    </label>
+                                    <input value="<%= currUser.username %>" id="user" class="form-control form-control-lg" type="text" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paymentMethod" class="form-label fw-semibold">
+                                        <i class="fas fa-credit-card text-primary"></i> Payment Method
+                                    </label>
+                                    <select id="paymentMethod" name="paymentMethod" class="form-select form-select-lg" required>
+                                        <option value="">Select Payment Method</option>
+                                        <option value="card">💳 Credit/Debit Card</option>
+                                        <option value="upi">📱 UPI</option>
+                                        <option value="netbanking">🏦 Net Banking</option>
+                                        <option value="wallet">💰 Digital Wallet</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a payment method</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dates Row -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="checkin" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt text-success"></i> Check In
+                                    </label>
+                                    <input name="checkin" id="checkin" class="form-control form-control-lg" type="date" required>
+                                    <div class="invalid-feedback">Please select check-in date</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="checkout" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt text-danger"></i> Check Out
+                                    </label>
+                                    <input name="checkout" id="checkout" class="form-control form-control-lg" type="date" required>
+                                    <div class="invalid-feedback">Please select check-out date</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Guests and Total Row -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="guests" class="form-label fw-semibold">
+                                        <i class="fas fa-users text-info"></i> Number of Guests
+                                    </label>
+                                    <input id="guests" name="guests" placeholder="Enter number of guests" class="form-control form-control-lg" type="number" min="1" required>
+                                    <div class="invalid-feedback">Please enter number of guests</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="total" class="form-label fw-semibold">
+                                        <i class="fas fa-rupee-sign text-warning"></i> Total Amount
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text">₹</span>
+                                        <input id="total" name="total" class="form-control" type="number" readonly>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i> Rate: ₹<%= listing.price %> per night per guest
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Pay Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="button" id="payNowBtn" class="btn btn-success btn-lg py-3 disabled d-flex align-items-center justify-content-center" disabled>
+                                    <i class="fas fa-lock me-2"></i>
+                                    <span class="btn-text">Complete Booking Details</span>
+                                </button>
+                                <p class="text-center text-muted mt-2 mb-0">
+                                    <small><i class="fas fa-shield-alt"></i> Secure payment • No booking fees • Free cancellation</small>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<% if (currUser) { %>
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-success mb-3" role="status"></div>
+                <p>Processing your payment...</p>
+                <small class="text-muted">Please wait, this may take a few seconds</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle flash messages from sessionStorage
+    const flashMessage = sessionStorage.getItem('flashMessage');
+    if (flashMessage) {
+        const flash = JSON.parse(flashMessage);
+        showFlashMessage(flash.type, flash.message);
+        sessionStorage.removeItem('flashMessage');
+    }
+    
+    // Get all form elements
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');  
+    const guestsInput = document.getElementById('guests');
+    const totalInput = document.getElementById('total');
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    const payNowBtn = document.getElementById('payNowBtn');
+    const bookingForm = document.getElementById('bookingForm');
+    
+    const pricePerNight = <%= listing.price %>;
+    
+    // Function to show flash messages
+    function showFlashMessage(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        
+        const flashHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                <i class="${icon}"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Insert flash message at the top of the card
+        const cardBody = document.querySelector('.card-body');
+        cardBody.insertAdjacentHTML('afterbegin', flashHTML);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+    
+    // Set minimum dates
+    const today = new Date().toISOString().split('T')[0];
+    checkinInput.min = today;
+    
+    // Calculate total function
+    function calculateTotal() {
+        const checkinDate = new Date(checkinInput.value);
+        const checkoutDate = new Date(checkoutInput.value);
+        const guests = parseInt(guestsInput.value) || 0;
+        
+        if (checkinInput.value && checkoutInput.value && guests > 0) {
+            const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
+            const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            if (nights > 0) {
+                const total = nights * guests * pricePerNight;
+                totalInput.value = total;
+                updatePayButton();
+                return;
+            }
+        }
+        
+        totalInput.value = '';
+        updatePayButton();
+    }
+    
+    // Update pay button state
+    function updatePayButton() {
+        const isValid = checkinInput.value && 
+                       checkoutInput.value && 
+                       guestsInput.value && 
+                       totalInput.value && 
+                       paymentMethodSelect.value;
+        
+        payNowBtn.disabled = !isValid;
+        const btnText = payNowBtn.querySelector('.btn-text');
+        const btnIcon = payNowBtn.querySelector('i');
+        
+        if (isValid) {
+            payNowBtn.classList.remove('disabled');
+            btnIcon.className = 'fas fa-credit-card me-2';
+            btnText.textContent = `PAY ₹${totalInput.value} (DEMO)`;
+        } else {
+            payNowBtn.classList.add('disabled');
+            btnIcon.className = 'fas fa-lock me-2';
+            btnText.textContent = 'Complete Booking Details';
+        }
+    }
+    
+    // Event listeners
+    checkinInput.addEventListener('change', function() {
+        // Set minimum checkout date
+        if (checkinInput.value) {
+            const minCheckout = new Date(checkinInput.value);
+            minCheckout.setDate(minCheckout.getDate() + 1);
+            checkoutInput.min = minCheckout.toISOString().split('T')[0];
+            
+            // Clear checkout if it's before new minimum
+            if (checkoutInput.value && new Date(checkoutInput.value) <= new Date(checkinInput.value)) {
+                checkoutInput.value = '';
+            }
+            calculateTotal();
+        }
+    });
+    
+    checkoutInput.addEventListener('change', calculateTotal);
+    guestsInput.addEventListener('input', calculateTotal);
+    paymentMethodSelect.addEventListener('change', updatePayButton);
+    
+    // Payment button click handler
+    payNowBtn.addEventListener('click', function() {
+        console.log('Payment button clicked');
+        
+        // Validate form
+        if (!bookingForm.checkValidity()) {
+            bookingForm.classList.add('was-validated');
+            return;
+        }
+        
+        // Prepare booking data
+        const bookingData = {
+            checkin: checkinInput.value,
+            checkout: checkoutInput.value,
+            guests: parseInt(guestsInput.value),
+            total: parseFloat(totalInput.value),
+            paymentMethod: paymentMethodSelect.value
+        };
+        
+        console.log('Booking data:', bookingData);
+        
+        // Show loading modal
+        const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        modal.show();
+        
+        // Send payment request  
+        fetch('/listings/<%= listing._id %>/book/process-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookingData)
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers.get('content-type'));
+            
+            // Check if response is HTML (redirect to login)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                throw new Error('Authentication required. Please login first.');
+            }
+            
+            // Handle authentication errors
+            if (response.status === 401) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Authentication required');
+                });
+            }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            modal.hide();
+            
+            if (data.success) {
+                // Create success flash message and redirect
+                sessionStorage.setItem('flashMessage', JSON.stringify({
+                    type: 'success',
+                    message: 'Payment successful! Booking confirmed. Booking ID: ' + data.bookingId
+                }));
+                window.location.href = data.redirectUrl;
+            } else {
+                // Create error flash message
+                sessionStorage.setItem('flashMessage', JSON.stringify({
+                    type: 'error', 
+                    message: 'Payment failed: ' + (data.error || 'Unknown error occurred')
+                }));
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Payment error:', error);
+            modal.hide();
+            
+            // Handle authentication errors
+            if (error.message.includes('Authentication required')) {
+                sessionStorage.setItem('flashMessage', JSON.stringify({
+                    type: 'error',
+                    message: 'Please login to complete your booking.'
+                }));
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Handle other errors
+            sessionStorage.setItem('flashMessage', JSON.stringify({
+                type: 'error',
+                message: 'Payment processing failed. Please try again. Error: ' + error.message
+            }));
+            window.location.reload();
+        });
+    });
+    
+    // Initial update
+    updatePayButton();
+});
+</script>
+
+<style>
+.booking-form-card {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #28a745, #20c997, #17a2b8);
+}
+
+.card-header {
+    border: none;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+}
+
+.form-control-lg, .form-select-lg {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-height: 54px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-success:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, #218838, #1e7e63);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success:disabled, .btn-success.disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-success .btn-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-success i {
+    flex-shrink: 0;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border-color: #ced4da;
+    font-weight: 600;
+}
+
+.form-label {
+    margin-bottom: 0.75rem;
+}
+
+.fw-semibold {
+    font-weight: 600;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 2rem 1.5rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card-header h4 {
+        font-size: 1.2rem;
+    }
+    
+    .card-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .btn-lg {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        min-height: 50px;
+    }
+    
+    .btn-success .btn-text {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .card-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .card-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .form-control-lg, .form-select-lg {
+        padding: 0.65rem 0.85rem;
+        min-height: 44px;
+    }
+    
+    .btn-lg {
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        min-height: 48px;
+    }
+    
+    .btn-success .btn-text {
+        font-size: 0.85rem;
+    }
+    
+    .row.g-3 {
+        margin: 0 -0.5rem;
+    }
+    
+    .row.g-3 > * {
+        padding: 0 0.5rem;
+    }
+    
+    /* Ensure button text doesn't break on small screens */
+    .btn-success {
+        white-space: nowrap;
+    }
+}
+
+/* Animation for button state changes */
+.btn-success .btn-text {
+    transition: all 0.3s ease;
+}
+
+.btn-success i {
+    transition: all 0.3s ease;
+}
+</style>
+<% } %>

@@ -1,12 +1,14 @@
 {
-  "engines":{
-      "node":"20.15.1"
+  "engines": {
+    "node": "20.15.1"
   },
   "name": "major-project",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node --trace-deprecation app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "start-debug": "node --trace-deprecation app.js"
   },
   "keywords": [],
   "author": "Rohit Kumar",
@@ -30,6 +32,8 @@
     "opencage-api-client": "^1.0.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^8.0.0"
+    "passport-local-mongoose": "^8.0.0",
+    "pdfkit": "^0.17.1",
+    "uuid": "^11.1.0"
   }
 }

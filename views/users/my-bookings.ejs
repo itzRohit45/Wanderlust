@@ -1,0 +1,100 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-calendar-alt"></i> My Bookings</h2>
+            <hr>
+            
+            <% if(bookings.length === 0) { %>
+                <div class="text-center mt-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted"></i>
+                    <h4 class="mt-3 text-muted">No bookings found</h4>
+                    <p class="text-muted">You haven't made any bookings yet.</p>
+                    <a href="/listings" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Browse Listings
+                    </a>
+                </div>
+            <% } else { %>
+                <div class="row">
+                    <% bookings.forEach(booking => { %>
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <img src="<%=booking.listing.image.url%>" class="card-img-top booking-img" alt="Property">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%=booking.listing.title%></h5>
+                                    <p class="card-text">
+                                        <i class="fas fa-map-marker-alt"></i> 
+                                        <%=booking.listing.location%>, <%=booking.listing.country%>
+                                    </p>
+                                    
+                                    <div class="booking-info">
+                                        <p class="mb-1">
+                                            <strong>Booking ID:</strong> <%=booking.bookingId%>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Check-in:</strong> <%=booking.checkIn.toLocaleDateString()%>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Check-out:</strong> <%=booking.checkOut.toLocaleDateString()%>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Guests:</strong> <%=booking.guests%>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Amount:</strong> ₹<%=booking.totalAmount.toLocaleString("en-IN")%>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Status:</strong> 
+                                            <span class="badge bg-<%=booking.paymentStatus === 'completed' ? 'success' : 'warning'%>">
+                                                <%=booking.paymentStatus.toUpperCase()%>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/bookings/<%=booking._id%>" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                        <a href="/bookings/<%=booking._id%>/receipt" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-download"></i> Receipt
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+    .booking-img {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .booking-info {
+        font-size: 0.9em;
+    }
+    
+    .card {
+        border: 1px solid #dee2e6;
+        transition: box-shadow 0.15s ease-in-out;
+    }
+    
+    .card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .badge {
+        font-size: 0.75em;
+    }
+    
+    .card-footer {
+        background-color: #f8f9fa;
+    }
+</style>

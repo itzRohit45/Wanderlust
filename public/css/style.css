@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 
@@ -156,9 +155,535 @@ body{
 }
 
 .booking-btn{
-    padding: 0 3rem 0 3rem !important;
-    text-align: center !important;
-    border-radius: 25px !important;
-    height: 40px !important;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+}
+
+.booking-btn:disabled {
+    background: #6c757d;
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.booking-form {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.booking-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.payment-info {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.receipt-btn {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+}
+
+.receipt-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.booking-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.booking-details-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.booking-details-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 1.5rem;
+}
+
+.property-thumbnail {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Responsive booking styles */
+@media (max-width: 768px) {
+    .booking-form {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .booking-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Success and error states */
+.booking-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.booking-error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+/* Search Functionality Styles */
+.advanced-search-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.search-form .search-inp {
+    border-radius: 25px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+.search-form .search-inp:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-search {
+    background: linear-gradient(135deg, #fe424d 0%, #ff6b6b 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(254, 66, 77, 0.3);
+}
+
+.btn-search:hover {
+    background: linear-gradient(135deg, #e63946 0%, #f77f00 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(254, 66, 77, 0.4);
+}
+
+.search-results-count {
+    background: #e3f2fd;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #2196f3;
+    margin-bottom: 1.5rem;
+}
+
+.filter-badge {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 2px;
+    display: inline-block;
+}
+
+.price-range-filter {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.sort-filter {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.search-suggestions {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.popular-search-tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin: 2px;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.popular-search-tag:hover {
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Enhanced listing cards for search results */
+.search-listing-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-listing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.search-listing-img {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.search-listing-card:hover .search-listing-img {
+    transform: scale(1.1);
+}
+
+.listing-price-highlight {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+}
+
+.search-no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.search-no-results i {
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+/* Advanced search form styling */
+.advanced-search-form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.advanced-search-form .form-control,
+.advanced-search-form .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+.advanced-search-form .form-control:focus,
+.advanced-search-form .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Mobile Responsiveness and Modern Improvements */
+
+/* Base responsive improvements */
+@media (max-width: 992px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Tablet responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        height: auto;
+        padding: 0.75rem 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .fa-compass {
+        font-size: 1.75rem;
+    }
+    
+    /* Card improvements for tablets */
+    .listing-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .show-card {
+        margin: 0 1rem;
+    }
+    
+    /* Button improvements */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* Form improvements */
+    .form-control, .form-select {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+    body {
+        font-size: 0.9rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+    
+    .fa-compass {
+        font-size: 1.5rem;
+    }
+    
+    /* Search bar mobile adjustments */
+    .search-inp, .btn-search {
+        display: none !important;
+    }
+    
+    /* Container adjustments */
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    /* Card responsiveness */
+    .card {
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .listing-card {
+        margin-bottom: 1rem;
+    }
+    
+    .show-card {
+        margin: 0 0.5rem;
+    }
+    
+    /* Button responsiveness */
+    .btn {
+        border-radius: 0.5rem;
+    }
+    
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Form responsiveness */
+    .form-control, .form-select {
+        font-size: 0.9rem;
+        padding: 0.65rem;
+        border-radius: 0.5rem;
+    }
+    
+    /* Typography responsiveness */
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.3rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    
+    .display-4 { font-size: 2rem; }
+    .lead { font-size: 1rem; }
+    
+    /* Footer responsiveness */
+    .f-info-links, .f-info-socials, .f-info-brand {
+        flex-direction: column;
+        text-align: center;
+        padding: 0.5rem 0;
+    }
+    
+    .f-info-socials .icon {
+        margin: 0.25rem;
+    }
+    
+    /* Spacing adjustments */
+    .mt-3, .my-3 { margin-top: 1rem !important; }
+    .mb-3, .my-3 { margin-bottom: 1rem !important; }
+    .mt-4, .my-4 { margin-top: 1.5rem !important; }
+    .mb-4, .my-4 { margin-bottom: 1.5rem !important; }
+    .mt-5, .my-5 { margin-top: 2rem !important; }
+    .mb-5, .my-5 { margin-bottom: 2rem !important; }
+    
+    /* Padding adjustments */
+    .p-3 { padding: 0.75rem !important; }
+    .p-4 { padding: 1rem !important; }
+    .p-5 { padding: 1.5rem !important; }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .container-fluid {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    
+    .card {
+        margin: 0.25rem;
+        border-radius: 0.5rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.1rem; }
+    
+    .display-4 { font-size: 1.75rem; }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px; /* Apple's recommended touch target size */
+        min-width: 44px;
+    }
+    
+    .form-control, .form-select {
+        min-height: 44px;
+    }
+    
+    /* Increase touch targets for better usability */
+    .nav-link {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .btn:hover {
+        transform: none;
+    }
+    
+    .card:hover {
+        transform: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .container {
+        max-width: 100% !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid #000;
+    }
+    
+    .btn {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
